@@ -1,10 +1,9 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import { CustomInput, CustomMobileInput } from '@/components/formik';
-import { Field, useFormikContext } from 'formik';
+import { CustomInput } from '@/components/formik';
+import { Field } from 'formik';
 import React from 'react';
 
 const ShippingForm = () => {
-  const { values } = useFormikContext();
   return (
     <div className="checkout-shipping-wrapper">
       <div className="checkout-shipping-form">
@@ -29,6 +28,7 @@ const ShippingForm = () => {
             />
           </div>
         </div>
+
         <div className="checkout-fieldset">
           <div className="d-block checkout-field">
             <Field
@@ -39,10 +39,19 @@ const ShippingForm = () => {
               component={CustomInput}
             />
           </div>
+
+          {/* 👉 téléphone simple, comme un input normal */}
           <div className="d-block checkout-field">
-            <CustomMobileInput name="mobile" defaultValue={values.mobile} />
+            <Field
+              name="mobile"
+              type="text"
+              label="* Mobile Number"
+              placeholder="Enter your mobile number"
+              component={CustomInput}
+            />
           </div>
         </div>
+
         <div className="checkout-fieldset">
           <Field name="isInternational">
             {({ field, form, meta }) => (
@@ -50,7 +59,6 @@ const ShippingForm = () => {
                 {meta.touched && meta.error ? (
                   <span className="label-input label-error">{meta.error}</span>
                 ) : (
-                  // eslint-disable-next-line jsx-a11y/label-has-associated-control
                   <label
                     className="label-input"
                     htmlFor={field.name}

@@ -26,25 +26,17 @@ const FormSchema = Yup.object().shape({
     .required('Email is required.'),
   address: Yup.string()
     .required('Shipping address is required.'),
+  // 👉 on considère mobile comme une simple string
   mobile: Yup.string()
-    .required('Mobile number is required.'),   // 👈 string, not object
+    .required('Mobile number is required.'),
   isInternational: Yup.boolean(),
   isDone: Yup.boolean()
 });
-
-// Objet mobile "vide" mais avec la bonne structure
-const emptyMobile = {
-  country: '',
-  countryCode: '',
-  dialCode: '',
-  value: ''
-};
 
 const ShippingDetails = ({ profile, shipping, subtotal }) => {
   console.log('ShippingDetails props >>>', { profile, shipping, subtotal });
 
   useDocumentTitle('Check Out Step 2 | Carsify');
-  
   useScrollTop();
   const dispatch = useDispatch();
   const history = useHistory();
@@ -53,28 +45,26 @@ const ShippingDetails = ({ profile, shipping, subtotal }) => {
     fullname: shipping.fullname || profile.fullname || '',
     email: shipping.email || profile.email || '',
     address: shipping.address || profile.address || '',
-    // 👉 always a string here
+    // 👉 on prend juste le numéro, sous forme de texte
     mobile:
-      shipping.mobile ||
-      (profile.mobile && profile.mobile.value) || // if profile.mobile is an object
+      (typeof shipping.mobile === 'string' && shipping.mobile) ||
+      (profile.mobile && profile.mobile.value) ||
       '',
     isInternational: !!shipping.isInternational,
     isDone: !!shipping.isDone
   };
 
-
-
-const onSubmitForm = (form) => {
-  dispatch(setShippingDetails({
-    fullname: form.fullname,
-    email: form.email,
-    address: form.address,
-    mobile: form.mobile,          // 👈 string
-    isInternational: form.isInternational,
-    isDone: true
-  }));
-  history.push(CHECKOUT_STEP_3);
-};
+  const onSubmitForm = (form) => {
+    dispatch(setShippingDetails({
+      fullname: form.fullname,
+      email: form.email,
+      address: form.address,
+      mobile: form.mobile, // string
+      isInternational: form.isInternational,
+      isDone: true
+    }));
+    history.push(CHECKOUT_STEP_3);
+  };
 
   return (
     <Boundary>
@@ -130,13 +120,13 @@ ShippingDetails.propTypes = {
     fullname: PropType.string,
     email: PropType.string,
     address: PropType.string,
-    mobile: PropType.object
+    mobile: PropType.oneOfType([PropType.object, PropType.string]) // pour être tranquille
   }).isRequired,
   shipping: PropType.shape({
     fullname: PropType.string,
     email: PropType.string,
     address: PropType.string,
-    mobile: PropType.object,
+    mobile: PropType.oneOfType([PropType.object, PropType.string]),
     isInternational: PropType.bool,
     isDone: PropType.bool
   }).isRequired
