@@ -38,6 +38,14 @@ const FormSchema = Yup.object().shape({
   isDone: Yup.boolean()
 });
 
+// objet "mobile" vide mais avec la bonne forme
+const emptyMobile = {
+  country: '',
+  countryCode: '',
+  dialCode: '',
+  value: ''
+};
+
 const ShippingDetails = ({ profile, shipping, subtotal }) => {
   useDocumentTitle('Check Out Step 2 | Salinaka');
   useScrollTop();
@@ -48,7 +56,8 @@ const ShippingDetails = ({ profile, shipping, subtotal }) => {
     fullname: shipping.fullname || profile.fullname || '',
     email: shipping.email || profile.email || '',
     address: shipping.address || profile.address || '',
-    mobile: shipping.mobile || profile.mobile || {},
+    // toujours un objet correct, même si le profil ne l’a pas
+    mobile: shipping.mobile || profile.mobile || emptyMobile,
     isInternational: shipping.isInternational || false,
     isDone: shipping.isDone || false
   };
