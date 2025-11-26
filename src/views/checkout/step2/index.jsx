@@ -44,8 +44,10 @@ const emptyMobile = {
   value: ''
 };
 
-const ShippingDetails = ({ profile = {}, shipping = {}, subtotal }) => {
-  useDocumentTitle('Check Out Step 2 | Salinaka');
+const ShippingDetails = ({ profile, shipping, subtotal }) => {
+  console.log('ShippingDetails props >>>', { profile, shipping, subtotal });
+
+  useDocumentTitle('Check Out Step 2 | Carsify');
   useScrollTop();
   const dispatch = useDispatch();
   const history = useHistory();
