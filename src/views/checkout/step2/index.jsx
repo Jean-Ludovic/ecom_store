@@ -26,12 +26,8 @@ const FormSchema = Yup.object().shape({
     .required('Email is required.'),
   address: Yup.string()
     .required('Shipping address is required.'),
-  mobile: Yup.object().shape({
-    country: Yup.string(),
-    countryCode: Yup.string(),
-    dialCode: Yup.string().required('Mobile number is required'),
-    value: Yup.string().required('Mobile number is required')
-  }),
+  mobile: Yup.string()
+    .required('Mobile number is required.'),   // 👈 string, not object
   isInternational: Yup.boolean(),
   isDone: Yup.boolean()
 });
@@ -48,37 +44,25 @@ const ShippingDetails = ({ profile, shipping, subtotal }) => {
   console.log('ShippingDetails props >>>', { profile, shipping, subtotal });
 
   useDocumentTitle('Check Out Step 2 | Carsify');
+  
   useScrollTop();
   const dispatch = useDispatch();
   const history = useHistory();
 
-  // sécuriser les objets reçus
-  const safeProfile = profile || {};
-  const safeShipping = shipping || {};
-
-  const buildInitialMobile = () => {
-    const fromShipping = safeShipping.mobile;
-    const fromProfile = safeProfile.mobile;
-
-    // si on a déjà un objet mobile quelque part, on le merge avec emptyMobile
-    if (fromShipping && typeof fromShipping === 'object') {
-      return { ...emptyMobile, ...fromShipping };
-    }
-    if (fromProfile && typeof fromProfile === 'object') {
-      return { ...emptyMobile, ...fromProfile };
-    }
-    // sinon on renvoie l'objet vide
-    return emptyMobile;
-  };
-
   const initFormikValues = {
-    fullname: safeShipping.fullname || safeProfile.fullname || '',
-    email: safeShipping.email || safeProfile.email || '',
-    address: safeShipping.address || safeProfile.address || '',
-    mobile: buildInitialMobile(),
-    isInternational: safeShipping.isInternational || false,
-    isDone: safeShipping.isDone || false
+    fullname: shipping.fullname || profile.fullname || '',
+    email: shipping.email || profile.email || '',
+    address: shipping.address || profile.address || '',
+    // 👉 always a string here
+    mobile:
+      shipping.mobile ||
+      (profile.mobile && profile.mobile.value) || // if profile.mobile is an object
+      '',
+    isInternational: !!shipping.isInternational,
+    isDone: !!shipping.isDone
   };
+
+
 
   const onSubmitForm = (form) => {
     dispatch(setShippingDetails({
