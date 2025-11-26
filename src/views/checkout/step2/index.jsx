@@ -64,17 +64,17 @@ const ShippingDetails = ({ profile, shipping, subtotal }) => {
 
 
 
-  const onSubmitForm = (form) => {
-    dispatch(setShippingDetails({
-      fullname: form.fullname,
-      email: form.email,
-      address: form.address,
-      mobile: form.mobile,
-      isInternational: form.isInternational,
-      isDone: true
-    }));
-    history.push(CHECKOUT_STEP_3);
-  };
+const onSubmitForm = (form) => {
+  dispatch(setShippingDetails({
+    fullname: form.fullname,
+    email: form.email,
+    address: form.address,
+    mobile: form.mobile,          // 👈 string
+    isInternational: form.isInternational,
+    isDone: true
+  }));
+  history.push(CHECKOUT_STEP_3);
+};
 
   return (
     <Boundary>
