@@ -21,14 +21,10 @@ const FormSchema = Yup.object().shape({
     .email('Email is not valid.')
     .required('Email is required.'),
   address: Yup.string(),
-  mobile: Yup.object()
-    .shape({
-      country: Yup.string(),
-      countryCode: Yup.string(),
-      dialCode: Yup.string(),
-      value: Yup.string()
-    })
+  // mobile simple string
+  mobile: Yup.string()
 });
+
 
 const EditProfile = () => {
   useDocumentTitle('Edit Account | Carsify');
@@ -51,7 +47,8 @@ const EditProfile = () => {
     fullname: profile.fullname || '',
     email: profile.email || '',
     address: profile.address || '',
-    mobile: profile.mobile || {}
+    // si profile.mobile est un objet, on prend .value, sinon string ou vide
+    mobile: (profile.mobile && profile.mobile.value) || ''
   };
 
   const {
@@ -86,9 +83,15 @@ const EditProfile = () => {
 
   const onSubmitUpdate = (form) => {
     // check if data has changed
-    const fieldsChanged = Object.keys(form).some((key) => profile[key] !== form[key]);
+    const fieldsChanged = Object.keys(form).some((key) => {
+      if (key === 'mobile') {
+        const currentMobile = (profile.mobile && profile.mobile.value) || '';
+        return currentMobile !== form.mobile;
+      }
+      return profile[key] !== form[key];
+    });
 
-    if (fieldsChanged || (Boolean(imageFile.banner.file || imageFile.avatar.file))) {
+    if (fieldsChanged || Boolean(imageFile.banner.file || imageFile.avatar.file)) {
       if (form.email !== profile.email) {
         modal.onOpenModal();
       } else {

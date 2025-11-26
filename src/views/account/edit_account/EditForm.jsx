@@ -1,10 +1,13 @@
-import { ArrowLeftOutlined, CheckOutlined, LoadingOutlined } from '@ant-design/icons';
-import { CustomInput, CustomMobileInput } from '@/components/formik';
+
 import { ACCOUNT } from '@/constants/routes';
 import { Field, useFormikContext } from 'formik';
 import PropType from 'prop-types';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
+import { ArrowLeftOutlined, CheckOutlined, LoadingOutlined } from '@ant-design/icons';
+import { CustomInput } from '@/components/formik';
+
+
 
 const EditForm = ({ isLoading, authProvider }) => {
   const history = useHistory();
@@ -38,12 +41,17 @@ const EditForm = ({ isLoading, authProvider }) => {
         component={CustomInput}
         style={{ textTransform: 'capitalize' }}
       />
-      <CustomMobileInput
-        defaultValue={values.mobile}
-        name="mobile"
+
+      {/* Mobile simple, comme dans le checkout step 2 */}
+      <Field
         disabled={isLoading}
+        name="mobile"
+        type="text"
         label="Mobile Number (Will be used for checkout)"
+        placeholder="Enter your mobile number"
+        component={CustomInput}
       />
+
       <br />
       <div className="edit-user-action">
         <button
