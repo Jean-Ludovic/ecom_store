@@ -26,19 +26,17 @@ const FormSchema = Yup.object().shape({
     .required('Email is required.'),
   address: Yup.string()
     .required('Shipping address is required.'),
-  mobile: Yup.object()
-    .shape({
-      country: Yup.string(),
-      countryCode: Yup.string(),
-      dialCode: Yup.string().required('Mobile number is required'),
-      value: Yup.string().required('Mobile number is required')
-    })
-    .required('Mobile number is required.'),
+  mobile: Yup.object().shape({
+    country: Yup.string(),
+    countryCode: Yup.string(),
+    dialCode: Yup.string().required('Mobile number is required'),
+    value: Yup.string().required('Mobile number is required')
+  }),
   isInternational: Yup.boolean(),
   isDone: Yup.boolean()
 });
 
-// objet "mobile" vide mais avec la bonne forme
+// Objet mobile "vide" mais avec la bonne structure
 const emptyMobile = {
   country: '',
   countryCode: '',
@@ -46,20 +44,38 @@ const emptyMobile = {
   value: ''
 };
 
-const ShippingDetails = ({ profile, shipping, subtotal }) => {
+const ShippingDetails = ({ profile = {}, shipping = {}, subtotal }) => {
   useDocumentTitle('Check Out Step 2 | Salinaka');
   useScrollTop();
   const dispatch = useDispatch();
   const history = useHistory();
 
+  // sécuriser les objets reçus
+  const safeProfile = profile || {};
+  const safeShipping = shipping || {};
+
+  const buildInitialMobile = () => {
+    const fromShipping = safeShipping.mobile;
+    const fromProfile = safeProfile.mobile;
+
+    // si on a déjà un objet mobile quelque part, on le merge avec emptyMobile
+    if (fromShipping && typeof fromShipping === 'object') {
+      return { ...emptyMobile, ...fromShipping };
+    }
+    if (fromProfile && typeof fromProfile === 'object') {
+      return { ...emptyMobile, ...fromProfile };
+    }
+    // sinon on renvoie l'objet vide
+    return emptyMobile;
+  };
+
   const initFormikValues = {
-    fullname: shipping.fullname || profile.fullname || '',
-    email: shipping.email || profile.email || '',
-    address: shipping.address || profile.address || '',
-    // toujours un objet correct, même si le profil ne l’a pas
-    mobile: shipping.mobile || profile.mobile || emptyMobile,
-    isInternational: shipping.isInternational || false,
-    isDone: shipping.isDone || false
+    fullname: safeShipping.fullname || safeProfile.fullname || '',
+    email: safeShipping.email || safeProfile.email || '',
+    address: safeShipping.address || safeProfile.address || '',
+    mobile: buildInitialMobile(),
+    isInternational: safeShipping.isInternational || false,
+    isDone: safeShipping.isDone || false
   };
 
   const onSubmitForm = (form) => {
